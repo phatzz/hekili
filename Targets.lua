@@ -207,6 +207,12 @@ local enemyExclusions = {
 	[187593] = true,      -- Primal Flames (Eganor fire elemental ability) UNVERIFIED NPC ID, NEEDS CHECK
 	[195584] = true,      -- Primal Flame (Eganor fire elemental ability)
 }
+-- Attempt inclusion list for enemies that do not AffectCombat, but we want to count as targets. Should only contain NPC ids that do not affect combat.
+local enemyInclusions = {
+	[197219] = true,	 -- Vile Lasher (Tree boss, Academy)
+	[197398] = true, 	 -- Hungry Lasher (Tree boss, Academy)
+	[198594] = true,     -- Cleave Training Dummy (Valdrakken)
+}
 local FindExclusionAuraByID
 
 RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
@@ -389,13 +395,24 @@ do
                     if guid and counted[ guid ] == nil then
 						if UnitExists( unit ) and not UnitIsDead( unit ) and UnitCanAttack( "player", unit ) and ( UnitAffectingCombat( unit ) or UnitName( unit ) == "Cleave Training Dummy" or UnitName( unit ) == "Vile Lasher" or UnitName( unit ) == "Hungry Lasher" ) and UnitInPhase( unit ) and UnitHealth( unit ) > 1 and ( UnitIsPVP( "player" ) or not UnitIsPlayer( unit ) ) then
                             local excluded = not UnitIsUnit( unit, "target" )
+							local included = not UnitIsUnit( unit, "target" )
 
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
-
+							
+							-- Attempt inclusion list for enemies that do not AffectCombat, but we want to count as targets. Should only contain NPC ids that do not affect combat.
+							if included then
+								included = enemyInclusions[ npcid ]
+								local rate, n = Hekili:GetTTD(unit)
+								count = count + 1
+								counted[ guid ] = true
+								local moving = GetUnitSpeed( unit ) > 0
+							if not moving then
+								stationary = stationary + 1
+							end
+							
                             if excluded then
                                 excluded = enemyExclusions[ npcid ]
-
                                 -- If our table has a number, unit is ruled out only if the buff is present.
                                 if excluded and type( excluded ) == "number" then
                                     excluded = FindExclusionAuraByID( unit, excluded )
@@ -417,7 +434,6 @@ do
                                     excluded = true
                                 end
                             end
-
                             if not excluded then
                                 local rate, n = Hekili:GetTTD(unit)
                                 count = count + 1
