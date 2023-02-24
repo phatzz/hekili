@@ -400,7 +400,7 @@ do
                             local npcid = guid:match( "(%d+)-%x-$" )
                             npcid = tonumber(npcid)
 							
-							-- Attempt inclusion list for enemies that do not AffectCombat, but we want to count as targets. Should only contain NPC ids that do not affect combat.
+							-- Attempt counting inclusion list
 							if included then
 								included = enemyInclusions[ npcid ]
 								local rate, n = Hekili:GetTTD(unit)
