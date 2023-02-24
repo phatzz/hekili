@@ -206,7 +206,7 @@ local enemyExclusions = {
 	[76598] = true,       -- Ritual of Bones (Shadowmoon Burial Grounds)
 	[187593] = true,      -- Primal Flames (Eganor fire elemental ability) UNVERIFIED NPC ID, NEEDS CHECK
 	[195584] = true,      -- Primal Flame (Eganor fire elemental ability)
-
+}
 local FindExclusionAuraByID
 
 RegisterEvent( "NAME_PLATE_UNIT_ADDED", function( event, unit )
